@@ -1,0 +1,4 @@
+Relatorios/
+.env
+*.pdf
+*.log
