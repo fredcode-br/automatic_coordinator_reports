@@ -117,8 +117,8 @@ def atualizarDados(caminho_arquivo_xlsm, data_inicial, data_final, pasta_destino
         sheet.Range("C6").Value = "'" + data_final.strftime("%d/%m/%Y")
         
         print("Atualizando dados...")
-        # workbook.RefreshAll()
-        # time.sleep(150) # Tempo para atualizar os dados
+        workbook.RefreshAll()
+        time.sleep(150) # Tempo para atualizar os dados
         print("Salvando o arquivo...")
         workbook.Save()
         time.sleep(30)  # Garantir que o Excel processe o comando Save
