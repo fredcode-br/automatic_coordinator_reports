@@ -45,7 +45,7 @@ def enviar_email(destinatario, assunto, corpo, arquivos_anexos):
         msg = MIMEMultipart()
         msg['From'] = remetente
         msg['To'] = destinatario
-        msg['Subject'] = assunto
+        msg['Subject'] = assunto    
 
         msg.attach(MIMEText(corpo, 'plain'))
 
@@ -55,13 +55,13 @@ def enviar_email(destinatario, assunto, corpo, arquivos_anexos):
         for arquivo in arquivos_anexos:
             if os.path.exists(arquivo):
                 with open(arquivo, "rb") as anexo:
-                    part = MIMEBase("application", "octet-stream")
+                    part = MIMEBase("application", "pdf")  # Especificando que é PDF
                     part.set_payload(anexo.read())
                     encoders.encode_base64(part)
                     part.add_header("Content-Disposition", f"attachment; filename={os.path.basename(arquivo)}")
+                    part.add_header("Content-Type", "application/pdf")  # Adicionando este cabeçalho
                     msg.attach(part)
-            else:
-                print(f"Aviso: Arquivo não encontrado - {arquivo}")
+
 
 
         with smtplib.SMTP_SSL('smtp.mailcorp.com.br', 465) as servidor:
@@ -84,7 +84,10 @@ def relatorios(workbook, planilha_relatorio, tabela_relatorio, codigo, coluna_fi
         tabela.Range.AutoFilter(Field=coluna_filtro, Criteria1=f"={codigo}")
 
         # --- GERAR PDF ---
-        caminho_pdf = os.path.join(pasta_destino, f'PEDIDOS {planilha_relatorio}.pdf')
+        relatorio = planilha_relatorio
+        if relatorio == "EM ABERTO":
+            relatorio = "EM_ABERTO"
+        caminho_pdf = os.path.join(pasta_destino, f'PEDIDOS_{relatorio}.pdf')
         sheet.ExportAsFixedFormat(0, caminho_pdf)  # 0 = PDF
 
         return caminho_pdf
@@ -216,4 +219,4 @@ data_inicial = datetime(data_final.year, data_final.month, 1, 1, 1, 1, 279706)
 atualizarDados(caminho_arquivo_xlsm, data_inicial, data_final, pasta_destino)
 
 # Enviar logs do dia
-enviar_logs_do_dia("relatorios@bioleve.com.br")
+enviar_logs_do_dia(EMAIL)
